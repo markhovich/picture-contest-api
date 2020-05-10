@@ -1,6 +1,7 @@
 package com.jmdev.crazypic.controller;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,24 +15,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.jmdev.crazypic.dao.ContestRepository;
-import com.jmdev.crazypic.exceptions.ContestNotFoundException;
+import com.jmdev.crazypic.exception.ContestNotFoundException;
 import com.jmdev.crazypic.model.Contest;
+import com.jmdev.crazypic.service.ContestService;
 
 @RestController
 public class ContestController {
 	
 	@Autowired
-	private ContestRepository cr;
+	private ContestService cs;
 
 	@GetMapping("/contests")
 	public Iterable<Contest> getAllContests(){
-		return this.cr.findAll();
+		return this.cs.findAll();
 	}
 	
 	@GetMapping("/contests/{id}")
 	public Contest getContest(@PathVariable int id) throws ContestNotFoundException{
-		Optional<Contest> contest = this.cr.findById(id);
+		Optional<Contest> contest = this.cs.findById(id);
 		
 		if (!contest.isPresent())
 			throw new ContestNotFoundException(id);
@@ -39,30 +40,36 @@ public class ContestController {
 		return contest.get();
 	}
 	
+	@GetMapping("/contest/{token}")
+	public Contest getContestByToken(@PathVariable String token) {
+		return this.cs.findByToken(token).get(0);
+	}
+	
 	@PostMapping("/contests")
-	public ResponseEntity<Object> createStudent(@RequestBody Contest contest) {
-		Contest savedStudent = this.cr.save(contest);
+	public ResponseEntity<Object> createContest(@RequestBody Contest contest) {
+		System.out.println(contest);
+		Contest savedContest = this.cs.save(contest);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-				.buildAndExpand(savedStudent.getId()).toUri();
+				.buildAndExpand(savedContest.getId()).toUri();
 		
 		return ResponseEntity.created(location).build();
 	}
 	
 	@PutMapping("/contests/{id}")
-	public ResponseEntity<Object> updateStudent(@RequestBody Contest contest, @PathVariable int id) {
-		Optional<Contest> studentOptional = this.cr.findById(id);
+	public ResponseEntity<Object> updateContest(@RequestBody Contest contest, @PathVariable int id) {
+		Optional<Contest> studentOptional = this.cs.findById(id);
 
 		if (!studentOptional.isPresent())
 			return ResponseEntity.notFound().build();
 		
 		contest.setId(id);
-		this.cr.save(contest);
+		this.cs.save(contest);
 
 		return ResponseEntity.accepted().build();
 	}
 	
 	@DeleteMapping("/contests/{id}")
-	public void deleteStudent(@PathVariable int id) {
-		this.cr.deleteById(id);
+	public void deleteContest(@PathVariable int id) {
+		this.cs.deleteById(id);
 	}
 }

@@ -1,4 +1,4 @@
-package com.jmdev.crazypic.exceptions;
+package com.jmdev.crazypic.exception;
 
 public class PictureNotFoundException extends Exception{
 
