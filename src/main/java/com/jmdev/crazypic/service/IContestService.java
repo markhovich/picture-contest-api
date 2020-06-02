@@ -2,6 +2,8 @@ package com.jmdev.crazypic.service;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +37,20 @@ public class IContestService implements ContestService {
 		return this.cr.findAll();
 	}
 
+	public List<Contest> findOver() {
+		java.util.Calendar cal = java.util.Calendar.getInstance();
+		java.util.Date utilDate = cal.getTime();
+		java.sql.Date timeNow = new java.sql.Date(utilDate.getTime());	
+		return this.em.createQuery("FROM Contest WHERE deadline < '" + timeNow + "'").getResultList();
+	}
+	
+	public List<Contest> findPending() {
+		java.util.Calendar cal = java.util.Calendar.getInstance();
+		java.util.Date utilDate = cal.getTime();
+		java.sql.Date timeNow = new java.sql.Date(utilDate.getTime());	
+		return this.em.createQuery("FROM Contest WHERE deadline > '" + timeNow + "'").getResultList();
+	}
+
 	@Override
 	public Optional<Contest> findById(int id) {
 		return this.cr.findById(id);
@@ -46,13 +62,6 @@ public class IContestService implements ContestService {
 		Contest savedContest = this.cr.save(contest);
 		new File(FILE_DIRECTORY + savedContest.getId()).mkdir();
 
-		for(Picture pic : contest.getPictures()) {
-			
-			String url = Paths.get(FILE_DIRECTORY + savedContest.getId() + "/" + pic.getName()).toString();
-			pic.setUrl(url);
-			pic.setContest(savedContest);
-			this.pr.save(pic);
-		}
 		return savedContest;
 	}
 
@@ -65,5 +74,4 @@ public class IContestService implements ContestService {
 	public List<Contest> findByToken(String token) {
 		return this.em.createQuery("FROM Contest WHERE token ='" + token + "'").getResultList();
 	}
-
 }

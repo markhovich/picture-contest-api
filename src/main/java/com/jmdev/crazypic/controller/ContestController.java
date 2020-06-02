@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ import com.jmdev.crazypic.model.Contest;
 import com.jmdev.crazypic.service.ContestService;
 
 @RestController
+@CrossOrigin(origins="http://localhost:4200")
 public class ContestController {
 	
 	@Autowired
@@ -40,6 +42,16 @@ public class ContestController {
 		return contest.get();
 	}
 	
+	@GetMapping("contests/over")
+	public List<Contest> getOver(){
+		return this.cs.findOver();	
+	}
+	
+	@GetMapping("contests/pending")
+	public List<Contest> getPending(){
+		return this.cs.findPending();	
+	}
+	
 	@GetMapping("/contest/{token}")
 	public Contest getContestByToken(@PathVariable String token) {
 		return this.cs.findByToken(token).get(0);
@@ -47,7 +59,6 @@ public class ContestController {
 	
 	@PostMapping("/contests")
 	public ResponseEntity<Object> createContest(@RequestBody Contest contest) {
-		System.out.println(contest);
 		Contest savedContest = this.cs.save(contest);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(savedContest.getId()).toUri();

@@ -38,7 +38,7 @@ public class FileService {
 		Optional<Picture> pic = this.ps.findById(id);
 
 		Path fileLocation = Paths.get(this.ROOT_LOCATION + pic.get().getContest().getId());
-		Path file = fileLocation.resolve(pic.get().getName());
+		Path file = fileLocation.resolve(pic.get().getFilename());
 		Resource resource = new UrlResource(file.toUri());
 		System.out.println(resource);
 		if(resource.exists() || resource.isReadable()) {

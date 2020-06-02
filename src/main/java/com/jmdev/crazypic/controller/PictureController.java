@@ -17,17 +17,18 @@ import com.jmdev.crazypic.service.PictureService;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
+@RequestMapping("/pictures")
 public class PictureController {
 	
 	@Autowired
 	private PictureService ps;
 
-	@GetMapping("/pictures")
+	@GetMapping("")
 	public Iterable<Picture> getAllPictures(){
 		return this.ps.findAll();
 	}
 	
-	@GetMapping("/pictures/{id}")
+	@GetMapping("/{id}")
 	public Picture getPicture(@PathVariable int id) throws PictureNotFoundException{
 		Optional<Picture> picture = this.ps.findById(id);
 		
@@ -37,14 +38,13 @@ public class PictureController {
 		return picture.get();
 	}
 	
-	@PostMapping(value="/pictures", headers="content-type=multipart/form-data")
+	@PostMapping(value="", headers="content-type=multipart/form-data")
 	public ResponseEntity<Object> createPicture(@RequestParam("file") MultipartFile file, 
 												@RequestParam("name") String name,
-												@RequestParam("id") String id,
+												@RequestParam("contestId") String contestId,
 												@RequestParam("comment") String comment,
 												@RequestParam("photograph") String photograph) throws IOException {
-	
-		Picture savedPicture = this.ps.save(file, id, name, comment, photograph);
+		Picture savedPicture = this.ps.save(file, contestId, name, comment, photograph);
 		
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(savedPicture.getId()).toUri();
@@ -52,7 +52,7 @@ public class PictureController {
 		return ResponseEntity.created(location).build();
 	}
 	
-	@PutMapping("/pictures/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<Object> voteForPicture(@RequestBody int note, @PathVariable int id) {
 		Optional<Picture> pictureOptional = this.ps.findById(id);
 
@@ -64,7 +64,7 @@ public class PictureController {
 		return ResponseEntity.accepted().build();
 	}	
 	
-	@DeleteMapping("/pictures/{id}")
+	@DeleteMapping("/{id}")
 	public void deletePicture(@PathVariable int id) {
 		this.ps.deleteById(id);
 	}

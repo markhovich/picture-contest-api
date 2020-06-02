@@ -41,12 +41,15 @@ public class IPictureService implements PictureService{
 		return this.pr.findById(id);
 	}
 
+	public List<Picture> saveMultiplePictures(){
+		return null;
+	}
 	@Override
 	public Picture save(MultipartFile file, String id, String name, String comment, String photograph) throws IOException {
 
 		String url = this.storeFile(file, id).toString();
 		Contest contest = new Contest(Integer.parseInt(id));
-		Picture picture = new Picture(url, name, photograph, comment, contest);
+		Picture picture = new Picture(url, name, file.getOriginalFilename(), photograph, comment, contest);
 		return this.pr.save(picture);
 	}
 

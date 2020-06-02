@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 
 @Entity
@@ -20,7 +22,7 @@ public @Data class Contest {
 	private String author;
 	private String token;
 	private Date deadline;
-	@OneToMany(mappedBy="contest", cascade=CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(mappedBy="contest", cascade=CascadeType.ALL)
 	private List<Picture> pictures;
 	
 	public Contest() {}
@@ -42,5 +44,18 @@ public @Data class Contest {
 	this.pictures.add(picture);
 	}
 	
+	public void removePicture(Picture picture) {
+		if(this.pictures != null) {
+			this.pictures.remove(picture);
+		}
+	}
+	
+	public void setPictures(List<Picture> pictures) {
+		this.pictures.clear();
+		if(pictures != null) {
+			this.pictures.addAll(pictures);
+		}
+		
+	}
 	
 }

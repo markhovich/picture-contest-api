@@ -15,5 +15,6 @@ public interface PictureService {
 	public void deleteById(int id);
 	public List<Picture> getPicturesByContest(int id);
 	public Picture vote(Picture picture, int note);
+	public List<Picture> saveMultiplePictures();
 	public Picture save(MultipartFile file, String id, String name, String comment, String photograph) throws IOException;
 }
